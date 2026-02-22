@@ -7,14 +7,59 @@ Protection and defense
 ## Installation
 
 ```bash
-pnpm install
+npm ci
 ```
 
 ## Development
 
 ```bash
-pnpm dev
+npm run dev
 ```
+
+## Quality and security checks
+
+```bash
+npm run ci
+```
+
+```bash
+npm run security:check
+```
+
+```bash
+npm run portfolio:audit
+```
+
+```bash
+npm run portfolio:plan
+```
+
+```bash
+npm run portfolio:issues:dryrun
+```
+
+```bash
+npm run portfolio:issues:summary
+```
+
+## Governance and planning artifacts
+
+- Portfolio security and modularization action plan:
+  - `docs/architecture/portfolio-gap-report.md`
+- Portfolio remediation tracker:
+  - `docs/architecture/remediation-tracker.md`
+- Modularity candidate map:
+  - `docs/architecture/modularity-candidate-map.md`
+- Remediation rollout execution status:
+  - `docs/architecture/remediation-rollout-progress.md`
+- Grand rollout timeline:
+  - `docs/architecture/grand-timeline-action-plan.md`
+- Security baseline and SLA policy:
+  - `SECURITY.md`
+- Security operations runbook:
+  - `docs/security/security-operations-runbook.md`
+- Dependency policy checker implementation:
+  - `scripts/check-n-policy.mjs`
 
 ## License
 

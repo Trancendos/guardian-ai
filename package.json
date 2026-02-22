@@ -4,22 +4,36 @@
   "description": "Protection and defense",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
+  "packageManager": "npm@10.9.4",
+  "engines": {
+    "node": ">=20"
+  },
   "scripts": {
-    "build": "tsc",
+    "build": "tsc -p tsconfig.json",
+    "typecheck": "tsc --noEmit",
     "dev": "tsx watch src/index.ts",
     "start": "node dist/index.js",
-    "test": "vitest"
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "security:audit": "npm audit --audit-level=high",
+    "deps:outdated": "npm outdated || true",
+    "deps:n-policy": "node scripts/check-n-policy.mjs",
+    "security:check": "npm run security:audit && npm run deps:n-policy",
+    "portfolio:audit": "node scripts/portfolio-governance-audit.mjs Trancendos",
+    "portfolio:plan": "node scripts/build-remediation-tracker.mjs",
+    "portfolio:issues:dryrun": "node scripts/open-remediation-issues.mjs --wave 1 --limit 20",
+    "portfolio:issues:summary": "node scripts/summarize-remediation-runs.mjs",
+    "ci": "npm run typecheck && npm run test && npm run build && npm run security:check"
   },
   "author": "Trancendos",
   "license": "MIT",
   "dependencies": {
-    "@trancendos/shared-core": "workspace:*",
-    "zod": "^3.22.4"
+    "zod": "^4.3.6"
   },
   "devDependencies": {
-    "@types/node": "^20.10.0",
-    "typescript": "^5.3.0",
-    "tsx": "^4.6.0",
-    "vitest": "^1.0.0"
+    "@types/node": "^25.3.0",
+    "tsx": "^4.21.0",
+    "typescript": "^5.9.3",
+    "vitest": "^4.0.18"
   }
 }

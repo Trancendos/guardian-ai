@@ -5,3 +5,5 @@ dist/
 coverage/
 repos-inventory.json
 docs/architecture/portfolio-gap-report.json
+docs/architecture/remediation-tracker.json
+docs/architecture/remediation-issue-run-wave-*.json

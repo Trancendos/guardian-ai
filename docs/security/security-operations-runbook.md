@@ -52,5 +52,23 @@ Escalate unresolved HIGH/CRITICAL items to platform owners immediately.
    npm run portfolio:audit
    ```
 
-4. Track changes in `docs/architecture/portfolio-gap-report.md`.
-5. Prioritize repositories in `critical` risk tier until reduced to `medium` or lower.
+4. Rebuild remediation waves and publish tracker:
+
+   ```bash
+   npm run portfolio:plan
+   ```
+
+5. Queue remediation tasks (dry-run first):
+
+   ```bash
+   npm run portfolio:issues:dryrun
+   node scripts/open-remediation-issues.mjs --wave 1 --limit 20 --execute
+   ```
+
+6. Track progress and blockers:
+
+   ```bash
+   npm run portfolio:issues:summary
+   ```
+
+7. Prioritize repositories in `critical` risk tier until reduced to `medium` or lower.

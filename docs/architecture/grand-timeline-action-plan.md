@@ -16,6 +16,17 @@
 
 Reference report: `docs/architecture/portfolio-gap-report.md`
 
+## Execution progress (current run)
+
+- Remediation tracker and wave assignments generated:
+  - `docs/architecture/remediation-tracker.md`
+- Remediation issues opened across repositories: **42**
+- Central progress tracking issue:
+  - https://github.com/Trancendos/.github/issues/15
+- Known blocker:
+  - Some repositories have GitHub Issues disabled, preventing automated task creation.
+  - Blocker details: `docs/architecture/remediation-rollout-progress.md`
+
 ## Scope requirements by repository class
 
 ### Class A: Core platform repos (must remain separate)

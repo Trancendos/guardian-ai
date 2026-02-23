@@ -1,6 +1,6 @@
 # Modularity Candidate Map
 
-Generated at: 2026-02-22T19:17:39.617Z
+Generated at: 2026-02-23T17:19:10.826Z
 
 ## Keep separate candidates (core/security boundaries)
 

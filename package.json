@@ -23,6 +23,9 @@
     "portfolio:plan": "node scripts/build-remediation-tracker.mjs",
     "portfolio:issues:dryrun": "node scripts/open-remediation-issues.mjs --wave 1 --limit 20",
     "portfolio:issues:summary": "node scripts/summarize-remediation-runs.mjs",
+    "portfolio:pr:audit": "node scripts/audit-pr-health.mjs Trancendos",
+    "portfolio:readiness": "node scripts/build-production-readiness-report.mjs",
+    "portfolio:pr:unblock:dryrun": "node scripts/unblock-pr-backlog.mjs --repo Trancendos/auto-code-rover-action --dry-run",
     "ci": "npm run typecheck && npm run test && npm run build && npm run security:check"
   },
   "author": "Trancendos",

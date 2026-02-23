@@ -71,4 +71,18 @@ Escalate unresolved HIGH/CRITICAL items to platform owners immediately.
    npm run portfolio:issues:summary
    ```
 
-7. Prioritize repositories in `critical` risk tier until reduced to `medium` or lower.
+7. Audit PR health and production readiness:
+
+   ```bash
+   npm run portfolio:pr:audit
+   npm run portfolio:readiness
+   ```
+
+8. For stale draft PR backlog (safe cleanup), execute dry-run then close:
+
+   ```bash
+   npm run portfolio:pr:unblock:dryrun
+   node scripts/unblock-pr-backlog.mjs --repo Trancendos/auto-code-rover-action --days 21 --limit 50
+   ```
+
+9. Prioritize repositories in `critical` risk tier until reduced to `medium` or lower.

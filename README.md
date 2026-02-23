@@ -42,6 +42,18 @@ npm run portfolio:issues:dryrun
 npm run portfolio:issues:summary
 ```
 
+```bash
+npm run portfolio:pr:audit
+```
+
+```bash
+npm run portfolio:readiness
+```
+
+```bash
+npm run portfolio:pr:unblock:dryrun
+```
+
 ## Governance and planning artifacts
 
 - Portfolio security and modularization action plan:
@@ -52,6 +64,14 @@ npm run portfolio:issues:summary
   - `docs/architecture/modularity-candidate-map.md`
 - Remediation rollout execution status:
   - `docs/architecture/remediation-rollout-progress.md`
+- PR health report:
+  - `docs/architecture/pr-health-report.md`
+- Production readiness (% completeness) report:
+  - `docs/architecture/production-readiness-report.md`
+- Full production readiness catalog:
+  - `docs/architecture/production-readiness-catalog.md`
+- Proactive service enhancement blueprint:
+  - `docs/architecture/proactive-service-enhancements.md`
 - Grand rollout timeline:
   - `docs/architecture/grand-timeline-action-plan.md`
 - Security baseline and SLA policy:

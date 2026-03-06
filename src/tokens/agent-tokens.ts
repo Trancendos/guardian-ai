@@ -291,17 +291,45 @@ export class AgentTokenService {
 
   private sign(payload: AgentTokenPayload): string {
     const data = JSON.stringify(payload);
-    const signature = createHmac('sha256', this.secret).update(data).digest('hex');
-    return `${Buffer.from(data).toString('base64url')}.${signature}`;
+    // 2060 Standard: Upgraded from SHA-256 → SHA-512 for quantum resistance
+    // Migration path: sha512 (now) → ml_kem (2030) → slh_dsa (2060)
+    const algorithm = process.env.GUARDIAN_TOKEN_ALGORITHM || 'sha512';
+    const signature = createHmac(algorithm, this.secret).update(data).digest('hex');
+    return `${Buffer.from(data).toString('base64url')}.${algorithm}.${signature}`;
   }
 
   private decode(token: string): AgentTokenPayload | null {
     try {
-      const [dataB64] = token.split('.');
+      const parts = token.split('.');
+      // Support both legacy (2-part) and new (3-part with algorithm) format
+      const dataB64 = parts[0];
       const data = Buffer.from(dataB64, 'base64url').toString('utf8');
       return JSON.parse(data) as AgentTokenPayload;
     } catch {
       return null;
+    }
+  }
+
+  private verify(token: string): boolean {
+    try {
+      const parts = token.split('.');
+      if (parts.length < 2) return false;
+      const [dataB64, algOrSig, maybeSig] = parts;
+      const data = Buffer.from(dataB64, 'base64url').toString('utf8');
+
+      if (parts.length === 3) {
+        // New format: data.algorithm.signature
+        const algorithm = algOrSig;
+        const signature = maybeSig;
+        const expected = createHmac(algorithm, this.secret).update(data).digest('hex');
+        return expected === signature;
+      } else {
+        // Legacy format: data.signature (sha256)
+        const expected = createHmac('sha256', this.secret).update(data).digest('hex');
+        return expected === algOrSig;
+      }
+    } catch {
+      return false;
     }
   }
 

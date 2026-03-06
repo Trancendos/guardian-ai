@@ -164,3 +164,49 @@ export class PermissionChecker {
 }
 
 export const permissionChecker = new PermissionChecker();
+
+// ============================================================================
+// 2060 STANDARD: IAM TRIPLE-FORMAT PERMISSION MAPPING
+// ============================================================================
+// Maps legacy AgentPermission enum values to Infinity Portal IAM triple format:
+//   namespace:resource:action
+// This enables guardian-ai to interoperate with the central IAM system.
+// Migration path: legacy enum (now) → triple format (2026) → semantic mesh (2036)
+// ============================================================================
+
+export const PERMISSION_TRIPLE_MAP: Record<AgentPermission, string> = {
+  [AgentPermission.CREATE_AGENT]:       'guardian:agents:create',
+  [AgentPermission.MODIFY_AGENT]:       'guardian:agents:write',
+  [AgentPermission.DELETE_AGENT]:       'guardian:agents:delete',
+  [AgentPermission.VIEW_AGENT]:         'guardian:agents:read',
+  [AgentPermission.DELEGATE_TASK]:      'guardian:tasks:delegate',
+  [AgentPermission.VIEW_TASK]:          'guardian:tasks:read',
+  [AgentPermission.CANCEL_TASK]:        'guardian:tasks:cancel',
+  [AgentPermission.SEND_MESSAGE]:       'guardian:messages:write',
+  [AgentPermission.VIEW_CONVERSATION]:  'guardian:messages:read',
+  [AgentPermission.MODIFY_PERMISSIONS]: 'guardian:permissions:write',
+  [AgentPermission.MODIFY_LIMITS]:      'guardian:limits:write',
+  [AgentPermission.VIEW_LOGS]:          'guardian:audit:read',
+  [AgentPermission.ROLLBACK]:           'guardian:system:rollback',
+  [AgentPermission.EXECUTE_SANDBOX]:    'guardian:sandbox:execute',
+  [AgentPermission.MANAGE_USERS]:       'guardian:users:admin',
+  [AgentPermission.VIEW_AUDIT_LOG]:     'guardian:audit:read',
+  [AgentPermission.MANAGE_SECRETS]:     'guardian:secrets:admin',
+};
+
+/**
+ * Convert a legacy AgentPermission to IAM triple format.
+ * Used for interoperability with Infinity Portal IAM.
+ */
+export function toTripleFormat(permission: AgentPermission): string {
+  return PERMISSION_TRIPLE_MAP[permission] || `guardian:unknown:${permission}`;
+}
+
+/**
+ * Check if an IAM triple-format permission string matches a legacy AgentPermission.
+ * Used when validating tokens from Infinity Portal.
+ */
+export function fromTripleFormat(triple: string): AgentPermission | null {
+  const entry = Object.entries(PERMISSION_TRIPLE_MAP).find(([, v]) => v === triple);
+  return entry ? (entry[0] as AgentPermission) : null;
+}

@@ -211,7 +211,7 @@ jobs:
           fi
 
       - name: Docker build test
-        run: docker build -t ${{ github.event.repository.name }}:ci-test . || echo "Docker build failed - check Dockerfile"
+        run: docker build -t ${{ github.event.repository.name }}:ci-test .
 
   # ── Production Readiness Gate ─────────────────────────────────────────────
   production-gate:

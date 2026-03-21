@@ -47,7 +47,7 @@ jobs:
         run: npm install
 
       - name: TypeScript type check
-        run: npx tsc --noEmit || true
+        run: npx tsc --noEmit
 
       - name: ESLint
         run: npx eslint src/ --ext .ts,.tsx --max-warnings 0 || true

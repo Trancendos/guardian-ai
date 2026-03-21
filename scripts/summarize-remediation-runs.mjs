@@ -87,7 +87,7 @@ ${createdResults.length > 0 ? createdResults.map((row) => `- ${row.issueUrl}`).j
 
 | Repository | Attempts | Last error |
 |---|---:|---|
-${failedRows.length > 0 ? failedRows.map((row) => `| ${row.repository} | ${row.attempts} | ${row.lastError.replace(/\|/g, "\\|")} |`).join("\n") : "| None | 0 | n/a |"}
+${failedRows.length > 0 ? failedRows.map((row) => `| ${row.repository} | ${row.attempts} | ${row.lastError.replace(/\\/g, "\\\\").replace(/\|/g, "\\|")} |`).join("\n") : "| None | 0 | n/a |"}
 
 ## Latest run files
 

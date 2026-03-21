@@ -6,7 +6,7 @@
 # Fixed: heredoc removed, npm lock not required, SHA-pinned actions
 # ============================================================
 
-name: CI/CD — guardian-ai
+name: CI/CD Pipeline
 
 on:
   push:
@@ -14,10 +14,12 @@ on:
   pull_request:
     branches: [main]
 
+permissions:
+  contents: read
+  security-events: write
+
 env:
-  SERVICE_NAME: guardian-ai
   NODE_VERSION: '20.x'
-  PYTHON_VERSION: '3.11'
 
 jobs:
   # ── Lint & Type Check ─────────────────────────────────────────────────────
@@ -45,7 +47,7 @@ jobs:
         run: npm install
 
       - name: TypeScript type check
-        run: npx tsc --noEmit || true
+        run: npx tsc --noEmit
 
       - name: ESLint
         run: npx eslint src/ --ext .ts,.tsx --max-warnings 0 || true
@@ -74,7 +76,7 @@ jobs:
       - name: Install dependencies
         run: npm install
 
-      - name: npm audit (OWASP dependency check)
+      - name: npm audit
         run: npm audit --audit-level=high || true
 
       - name: Check for hardcoded secrets
@@ -86,14 +88,13 @@ jobs:
             src/ 2>/dev/null | grep -v "test\|spec\|example\|placeholder"; then
             echo "⚠️  Potential hardcoded secrets found — review above"
           else
-            echo "✅ No hardcoded secrets detected"
+            echo "OK: No hardcoded secrets detected"
           fi
 
       - name: Verify 2060 compliance markers
         run: |
           echo "Checking 2060 compliance markers..."
-          files_without_marker=$(grep -rL "2060\|Trancendos\|Architecture:" src/ --include="*.ts" 2>/dev/null | wc -l)
-          echo "Files without 2060 markers: $files_without_marker"
+          grep -rL "2060\|Trancendos" src/ --include="*.ts" 2>/dev/null | wc -l || echo "0"
 
   # ── Build ─────────────────────────────────────────────────────────────────────
   build:
@@ -126,7 +127,7 @@ jobs:
       - name: Verify build output
         run: |
           if [ -d "dist" ]; then
-            echo "✅ Build successful"
+            echo "Build successful"
             ls -la dist/
           else
             echo "⚠️ No dist directory — build may use different output path"
@@ -135,7 +136,7 @@ jobs:
       - name: Upload build artifact
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
         with:
-          name: ${{ env.SERVICE_NAME }}-build
+          name: ${{ github.event.repository.name }}-build
           path: dist/
           if-no-files-found: warn
           retention-days: 7
@@ -185,8 +186,7 @@ jobs:
       - name: Ensure Dockerfile exists
         run: |
           if [ -f "Dockerfile" ]; then
-            echo "✅ Dockerfile found"
-            cat Dockerfile
+            echo "Dockerfile found"
           else
             echo "⚠️  No Dockerfile — creating minimal production Dockerfile"
             printf '%s\n' \
@@ -211,7 +211,7 @@ jobs:
           fi
 
       - name: Docker build test
-        run: docker build -t ${{ env.SERVICE_NAME }}:ci-test . || echo "⚠️  Docker build failed — check Dockerfile"
+        run: docker build -t ${{ github.event.repository.name }}:ci-test .
 
   # ── Production Readiness Gate ─────────────────────────────────────────────
   production-gate:
@@ -227,9 +227,9 @@ jobs:
         run: |
           echo "============================================"
           echo "  PRODUCTION READINESS GATE"
-          echo "  Service: ${{ env.SERVICE_NAME }}"
-          echo "  Commit: ${{ github.sha }}"
-          echo "  Branch: ${{ github.ref_name }}"
+          echo "  Service: ${{ github.event.repository.name }}"
+          echo "  Commit:  ${{ github.sha }}"
+          echo "  Branch:  ${{ github.ref_name }}"
           echo "============================================"
 
           PASS=true

@@ -1,7 +1,7 @@
 {
   "name": "@trancendos/guardian-ai",
   "version": "1.0.0",
-  "description": "Protection and defense",
+  "description": "Zero-trust IAM gateway and behavioral security engine for the Trancendos 24-agent mesh",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
   "packageManager": "npm@10.9.4",
@@ -13,30 +13,31 @@
     "typecheck": "tsc --noEmit",
     "dev": "tsx watch src/index.ts",
     "start": "node dist/index.js",
-    "test": "vitest run",
-    "test:watch": "vitest",
-    "security:audit": "npm audit --audit-level=high",
-    "deps:outdated": "npm outdated || true",
-    "deps:n-policy": "node scripts/check-n-policy.mjs",
-    "security:check": "npm run security:audit && npm run deps:n-policy",
-    "portfolio:audit": "node scripts/portfolio-governance-audit.mjs Trancendos",
-    "portfolio:plan": "node scripts/build-remediation-tracker.mjs",
-    "portfolio:issues:dryrun": "node scripts/open-remediation-issues.mjs --wave 1 --limit 20",
-    "portfolio:issues:summary": "node scripts/summarize-remediation-runs.mjs",
-    "portfolio:pr:audit": "node scripts/audit-pr-health.mjs Trancendos",
-    "portfolio:readiness": "node scripts/build-production-readiness-report.mjs",
-    "portfolio:pr:unblock:dryrun": "node scripts/unblock-pr-backlog.mjs --repo Trancendos/auto-code-rover-action --dry-run",
-    "ci": "npm run typecheck && npm run test && npm run build && npm run security:check"
+    "test": "vitest",
+    "lint": "eslint src --ext .ts",
+    "typecheck": "tsc --noEmit"
   },
   "author": "Trancendos",
   "license": "MIT",
   "dependencies": {
-    "zod": "^4.3.6"
+    "cors": "^2.8.5",
+    "dotenv": "^16.3.1",
+    "express": "^4.18.2",
+    "helmet": "^7.1.0",
+    "morgan": "^1.10.0",
+    "pino": "^8.17.2",
+    "pino-pretty": "^10.3.1",
+    "uuid": "^9.0.1",
+    "zod": "^3.22.4"
   },
   "devDependencies": {
-    "@types/node": "^25.3.0",
-    "tsx": "^4.21.0",
-    "typescript": "^5.9.3",
-    "vitest": "^4.0.18"
+    "@types/cors": "^2.8.17",
+    "@types/express": "^4.17.21",
+    "@types/morgan": "^1.9.9",
+    "@types/node": "^20.10.0",
+    "@types/uuid": "^9.0.7",
+    "tsx": "^4.6.0",
+    "typescript": "^5.3.0",
+    "vitest": "^1.0.0"
   }
 }

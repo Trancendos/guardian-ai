@@ -41,7 +41,7 @@
  * Revert: 7609026
  */
 
-import express, { Request, Response, NextFunction } from 'express';
+import express, { Request, Response, NextFunction, Router } from 'express';
 import cors from 'cors';
 import helmet from 'helmet';
 import morgan from 'morgan';
@@ -537,6 +537,100 @@ eventBus2060.emit('service.2060.wired', {
 
 // ═══════════════════════════════════════════════════════════════════════════════
 // END 2060 SMART RESILIENCE LAYER
+
+  // ════════════════════════════════════════════════════════════════════════════════
+  // SENTINEL STATION — PQC TUNNEL ROUTES (PBV-160)
+  // ════════════════════════════════════════════════════════════════════════════════
+  
+  const tunnelApi = Router();
+  
+  // POST /api/v1/tunnels — Request new tunnel
+  tunnelApi.post('/', async (req: Request, res: Response) => {
+    try {
+      const { TunnelManager } = await import('../tunnels/tunnel-manager');
+      const manager = new TunnelManager();
+      
+      const { sourceLocation, targetLocation, requestedClass, requestedDuration, purpose, requestedBy, context } = req.body;
+      
+      if (!sourceLocation || !targetLocation || !purpose || !requestedBy) {
+        return res.status(400).json({ error: 'Missing required fields', required: ['sourceLocation', 'targetLocation', 'purpose', 'requestedBy'] });
+      }
+      
+      const decision = await manager.requestTunnel({
+        requestId: `tr-${Date.now()}`,
+        sourceLocation, targetLocation,
+        requestedClass: requestedClass || 'beta',
+        requestedDuration: requestedDuration || 3600,
+        purpose, requestedBy,
+        context: context || { securityClearance: 'internal', dataClassification: 'internal', urgency: 'medium', complianceRequirements: [] }
+      });
+      
+      logger.info('Tunnel requested', { requestId: decision.requestId, approved: decision.approved });
+      return res.status(decision.approved ? 201 : 403).json(decision);
+    } catch (error) {
+      logger.error('Tunnel request error', { error });
+      return res.status(500).json({ error: 'Internal server error' });
+    }
+  });
+  
+  // GET /api/v1/tunnels — List tunnels
+  tunnelApi.get('/', async (req: Request, res: Response) => {
+    try {
+      const { TunnelManager } = await import('../tunnels/tunnel-manager');
+      const manager = new TunnelManager();
+      const state = req.query.state as string;
+      const tunnels = manager.listTunnels(state as any);
+      return res.json({ count: tunnels.length, tunnels: tunnels.map(t => ({ id: t.id, name: t.name, state: t.state, source: t.sourceLocation, target: t.targetLocation })) });
+    } catch (error) {
+      return res.status(500).json({ error: 'Internal server error' });
+    }
+  });
+  
+  // GET /api/v1/tunnels/:id — Get tunnel details
+  tunnelApi.get('/:id', async (req: Request, res: Response) => {
+    try {
+      const { TunnelManager } = await import('../tunnels/tunnel-manager');
+      const manager = new TunnelManager();
+      const tunnel = manager.getTunnel(req.params.id);
+      if (!tunnel) return res.status(404).json({ error: 'Tunnel not found' });
+      return res.json(tunnel);
+    } catch (error) {
+      return res.status(500).json({ error: 'Internal server error' });
+    }
+  });
+  
+  // POST /api/v1/tunnels/:id/activate — Activate tunnel
+  tunnelApi.post('/:id/activate', async (req: Request, res: Response) => {
+    try {
+      const { TunnelManager } = await import('../tunnels/tunnel-manager');
+      const manager = new TunnelManager();
+      const { sessionToken } = req.body;
+      if (!sessionToken) return res.status(400).json({ error: 'sessionToken required' });
+      const tunnel = await manager.activateTunnel(req.params.id, sessionToken);
+      logger.info('Tunnel activated', { tunnelId: tunnel.id });
+      return res.json(tunnel);
+    } catch (error) {
+      const msg = error instanceof Error ? error.message : 'Unknown error';
+      return res.status(400).json({ error: msg });
+    }
+  });
+  
+  // DELETE /api/v1/tunnels/:id — Terminate tunnel
+  tunnelApi.delete('/:id', async (req: Request, res: Response) => {
+    try {
+      const { TunnelManager } = await import('../tunnels/tunnel-manager');
+      const manager = new TunnelManager();
+      const tunnel = await manager.terminateTunnel(req.params.id, req.query.reason as string || 'Manual termination');
+      logger.info('Tunnel terminated', { tunnelId: tunnel.id });
+      return res.json(tunnel);
+    } catch (error) {
+      const msg = error instanceof Error ? error.message : 'Unknown error';
+      return res.status(400).json({ error: msg });
+    }
+  });
+  
+  app.use('/api/v1/tunnels', tunnelApi);
+  logger.info('Sentinel Station tunnel routes mounted at /api/v1/tunnels');
 // ═══════════════════════════════════════════════════════════════════════════════
 
   app.use((err: Error, _req: Request, res: Response, _next: NextFunction) => {

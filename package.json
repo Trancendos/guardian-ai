@@ -4,8 +4,13 @@
   "description": "Zero-trust IAM gateway and behavioral security engine for the Trancendos 24-agent mesh",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
+  "packageManager": "npm@10.9.4",
+  "engines": {
+    "node": ">=20"
+  },
   "scripts": {
-    "build": "tsc",
+    "build": "tsc -p tsconfig.json",
+    "typecheck": "tsc --noEmit",
     "dev": "tsx watch src/index.ts",
     "start": "node dist/index.js",
     "test": "vitest",

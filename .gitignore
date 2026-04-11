@@ -1,0 +1,12 @@
+node_modules/
+dist/
+.DS_Store
+*.log
+coverage/
+repos-inventory.json
+docs/architecture/portfolio-gap-report.json
+docs/architecture/remediation-tracker.json
+docs/architecture/remediation-issue-run-wave-*.json
+docs/architecture/pr-health-report.json
+docs/architecture/production-readiness-report.json
+docs/architecture/pr-unblock-run-*.json

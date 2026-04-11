@@ -30,7 +30,7 @@ jobs:
         run: npm run portfolio:audit
 
       - name: Upload audit report artifacts
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: portfolio-governance-audit
           path: |

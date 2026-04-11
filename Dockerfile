@@ -3,7 +3,7 @@
 # Multi-stage build | Node 20 Alpine | 2060-ready
 # ============================================================
 # Stage 1: Dependencies
-FROM node:20-alpine AS deps
+FROM node:24-alpine AS deps
 WORKDIR /app
 
 # Install security updates
@@ -17,7 +17,7 @@ COPY tsconfig*.json ./
 RUN npm ci --only=production --ignore-scripts 2>/dev/null || npm install --only=production --ignore-scripts
 
 # Stage 2: Build
-FROM node:20-alpine AS builder
+FROM node:24-alpine AS builder
 WORKDIR /app
 
 COPY package*.json ./
@@ -31,7 +31,7 @@ COPY . .
 RUN npm run build 2>/dev/null || npx tsc --outDir dist 2>/dev/null || echo "No build step configured"
 
 # Stage 3: Production
-FROM node:20-alpine AS production
+FROM node:24-alpine AS production
 WORKDIR /app
 
 # Security: non-root user
